@@ -37,7 +37,7 @@ impl BuildDir {
 }
 impl Default for BuildDir {
     fn default() -> Self {
-        let mut path = PathBuf::new();
+        let mut path = env::current_dir().expect("Failed to get working directory");
         path.push("target");
         path.push("mbedtls");
 
@@ -65,7 +65,7 @@ impl ConfigH {
 }
 impl Default for ConfigH {
     fn default() -> Self {
-        let mut path = PathBuf::new();
+        let mut path = PathBuf::from(".");
         path.push("mbedtls");
         path.push("config.h");
 

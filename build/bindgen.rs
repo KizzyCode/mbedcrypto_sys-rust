@@ -82,7 +82,7 @@ impl Bindgen {
     /// Generates the bindings
     pub fn generate(&self) {
         // Create the target path
-        let mut mbedtls_rs = PathBuf::new();
+        let mut mbedtls_rs = env::current_dir().expect("Failed to get working directory");
         mbedtls_rs.push("src");
         mbedtls_rs.push("mbedtls.rs");
 
