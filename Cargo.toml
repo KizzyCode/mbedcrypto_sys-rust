@@ -1,0 +1,34 @@
+[package]
+name = "mbedcrypto_sys"
+version = "0.1.0"
+edition = "2018"
+authors = ["KizzyCode Software Labs./Keziah Biermann <development@kizzycode.de>"]
+keywords = ["crypto", "bindings", "mbedtls", "aes", "rsa"]
+categories = ["external-ffi-bindings", "cryptography"]
+description = "This crate builds the crypto parts of mbedTLS and provides low-level bindings to them"
+license = "BSD-2-Clause OR MIT"
+repository = "https://github.com/KizzyCode/mbedcrypto_sys-rust"
+readme = "README.md"
+build = "build/main.rs"
+exclude = [".*"]
+
+
+[badges]
+travis-ci = { repository = "KizzyCode/mbedcrypto_sys-rust" }
+appveyor = { repository = "KizzyCode/mbedcrypto_sys-rust" }
+
+
+[features]
+default = []
+
+
+[build-dependencies]
+cmake = "0.1"
+bindgen = "0.57"
+
+
+[profile.release]
+overflow-checks = true
+
+[profile.bench]
+overflow-checks = true
