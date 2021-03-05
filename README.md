@@ -1,6 +1,6 @@
 [![License BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue.svg)](https://opensource.org/licenses/BSD-2-Clause)
 [![License MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Travis CI](https://travis-ci.org/KizzyCode/mbedcrypto_sys-rust.svg?branch=master)](https://travis-ci.org/KizzyCode/mbedcrypto_sys-rust)
+[![Travis CI](https://travis-ci.com/KizzyCode/mbedcrypto_sys-rust.svg?branch=master)](https://travis-ci.com/KizzyCode/mbedcrypto_sys-rust)
 [![AppVeyor CI](https://ci.appveyor.com/api/projects/status/github/KizzyCode/mbedcrypto_sys-rust?svg=true)](https://ci.appveyor.com/project/KizzyCode/mbedcrypto-sys-rust)
 
 # mbedcrypto_sys
