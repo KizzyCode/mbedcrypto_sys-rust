@@ -12,8 +12,9 @@ matrix:
       arch: amd64
     - os: linux
       arch: amd64
-    - os: linux
-      arch: arm64
+# NOTE: clang_Cursor_isFunctionInlined is not supported by Travis-CI Arm64 VMs, but required
+#    - os: linux
+#      arch: arm64
 
 compiler:
   - clang
