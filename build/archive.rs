@@ -1,6 +1,6 @@
 use std::{
-    env, process::Command,
-    path::{ Component, Path, PathBuf }
+    env, iter::FromIterator, process::Command,
+    path::{ Path, PathBuf }
 };
 
 
@@ -50,7 +50,6 @@ impl Untar {
         let strip_string = format!("--strip-components={}", strip_n);
         
         // Extract archive
-        dbg!("tar", "--extract", &strip_string, "--directory", dest_str, "--file", archive_str);
         Command::new(&self.binary)
             .args(vec!["--extract", &strip_string, "--directory", dest_str, "--file", archive_str])
             .output().expect("Failed to extract file");
@@ -58,21 +57,18 @@ impl Untar {
 }
 impl Default for Untar {
     fn default() -> Self {
-        // Common prefixes for installed binaries
-        let prefixes = vec![
-            vec!["bin"],
-            vec!["usr", "bin"],
-            vec!["usr", "local", "bin"]
+        // Common tar locations
+        let paths = vec![
+            vec!["/", "bin", "tar"],
+            vec!["/", "usr", "bin", "tar"],
+            vec!["/", "usr", "local", "bin", "tar"],
+            vec!["C:", "Windows", "System32", "tar.exe"]
         ];
 
-        // Find a curl instance
-        for prefix in prefixes {
-            // Create the path
-            let mut binary = (Component::RootDir.as_ref() as &Path).to_owned();
-            binary.extend(prefix);
-            binary.push("tar");
-
+        // Find a tar instance
+        for path in paths {
             // Test if the binary exists
+            let binary = PathBuf::from_iter(path);
             if binary.exists() {
                 return Self { binary };
             }
