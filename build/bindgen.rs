@@ -13,8 +13,7 @@ pub struct IncludeDir {
 impl IncludeDir {
     /// Creates a new include directory handle from the artifacts directors
     pub fn new<P>(artifacts: P) -> Self where P: AsRef<Path> {
-        let mut include = artifacts.as_ref().to_owned();
-        include.push("include");
+        let include = artifacts.as_ref().join("include");
         Self { path: include }
     }
 
@@ -38,9 +37,10 @@ impl Headers {
         Some(Self { headers })
     }
 
-    /// Creates full paths to the include files
-    pub fn paths(&self, include_dir: &IncludeDir) -> Vec<String> {
-        self.headers.iter().map(|h| format!("{}/mbedtls/{}", include_dir.path().display(), h)).collect()
+    /// The header files
+    pub fn files(&self) -> Vec<PathBuf> {
+        // Map file names
+        self.headers.iter().map(|h| PathBuf::from("mbedtls").join(h)).collect()
     }
 }
 impl Default for Headers {
@@ -74,17 +74,15 @@ pub struct Bindgen {
 }
 impl Bindgen {
     /// Generates a new bindgen generator
-    pub fn new(include_dir: IncludeDir) -> Self {
-        let headers = Headers::from_env().unwrap_or_default();
+    pub fn new(include_dir: IncludeDir, headers: Headers) -> Self {
         Self { include_dir, headers }
     }
 
     /// Generates the bindings
     pub fn generate(&self) {
         // Create the target path
-        let mut mbedtls_rs = env::current_dir().expect("Failed to get working directory");
-        mbedtls_rs.push("src");
-        mbedtls_rs.push("mbedtls.rs");
+        let mbedtls_rs = env::current_dir().expect("Failed to get working directory")
+            .join("src").join("mbedtls.rs");
 
         // Configure the builder
         let mut builder = bindgen::builder()
@@ -102,8 +100,14 @@ impl Bindgen {
             .whitelist_type("time_t").opaque_type("time_t");
         
         // Register headers and generate and write the bindings
-        for header in self.headers.paths(&self.include_dir) {
-            builder = builder.header(header);
+        for header in self.headers.files() {
+            // Create full path to header
+            let mut path = self.include_dir.path().clone();
+            path.extend(header.components());
+
+            // Register header
+            let path = path.to_str().expect("Invalid header file path");
+            builder = builder.header(path);
         }
         builder.generate().expect("Failed to generate bindings")
             .write_to_file(mbedtls_rs).expect("Failed to write bindings");

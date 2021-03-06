@@ -1,6 +1,6 @@
 use std::{
     env, process::Command,
-    path::{ Path, PathBuf }
+    path::{ Component, Path, PathBuf }
 };
 
 
@@ -16,14 +16,16 @@ impl MbedTlsTarball {
         Some(MbedTlsTarball { archive: PathBuf::from(archive) })
     }
 
-    /// Extracts the release archive
-    pub fn extract<P>(&self, dest: P) where P: AsRef<Path> {
-        Untar::from_env().unwrap_or_default().extract(&self.archive, dest, 1);
+    /// The path to the tarball
+    pub fn path(&self) -> &PathBuf {
+        &self.archive
     }
 }
 impl Default for MbedTlsTarball {
     fn default() -> Self {
-        MbedTlsTarball { archive: PathBuf::from("mbedtls/mbedtls-2.25.0.tar.gz") }
+        let archive = env::current_dir().expect("Failed to get working directory")
+            .join("mbedtls").join("mbedtls-2.25.0.tar.gz");
+        MbedTlsTarball { archive }
     }
 }
 
@@ -48,20 +50,26 @@ impl Untar {
         let strip_string = format!("--strip-components={}", strip_n);
         
         // Extract archive
+        dbg!("tar", "--extract", &strip_string, "--directory", dest_str, "--file", archive_str);
         Command::new(&self.binary)
-            .args(vec!["--extract", &strip_string, "--cd", dest_str, "--file", archive_str])
-            .output().expect("Failed to download file");
+            .args(vec!["--extract", &strip_string, "--directory", dest_str, "--file", archive_str])
+            .output().expect("Failed to extract file");
     }
 }
 impl Default for Untar {
     fn default() -> Self {
         // Common prefixes for installed binaries
-        let prefixes = ["/bin", "/usr/bin", "/usr/local/bin"];
+        let prefixes = vec![
+            vec!["bin"],
+            vec!["usr", "bin"],
+            vec!["usr", "local", "bin"]
+        ];
 
         // Find a curl instance
-        for prefix in prefixes.iter() {
+        for prefix in prefixes {
             // Create the path
-            let mut binary = PathBuf::from(prefix);
+            let mut binary = (Component::RootDir.as_ref() as &Path).to_owned();
+            binary.extend(prefix);
             binary.push("tar");
 
             // Test if the binary exists
@@ -71,6 +79,6 @@ impl Default for Untar {
         }
 
         // Raise a fatal error
-        panic!("tar could not be found. Set MBEDCRYPTO_TAR to specify a path manually.")
+        panic!("`tar` could not be found. Set MBEDCRYPTO_TAR to specify a path manually.")
     }
 }

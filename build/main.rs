@@ -3,28 +3,30 @@ mod bindgen;
 mod build;
 
 use crate::{
-    archive::MbedTlsTarball,
-    bindgen::{ IncludeDir, Bindgen },
+    archive::{ MbedTlsTarball, Untar },
+    bindgen::{ IncludeDir, Headers, Bindgen },
     build::{ BuildDir, ConfigH, MbedTls }
 };
 
 
 /// The main function :P
 fn main() {
-    // Create dir and open archive
+    // Extract archive
     let build_dir = BuildDir::from_env().unwrap_or_default();
     let archive = MbedTlsTarball::from_env().unwrap_or_default();
+    Untar::from_env().unwrap_or_default().extract(archive.path(), build_dir.path(), 1);
 
-    // Extract archive and build library
-    archive.extract(build_dir.path());
+    // Build library
     let config_h = ConfigH::from_env().unwrap_or_default();
     let artifacts = MbedTls::new(config_h, build_dir).build();
 
     // Link library
-    println!("cargo:rustc-link-search=native={}/lib", artifacts.display());
+    let lib_dir = artifacts.join("lib");
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=static=mbedcrypto");
 
     // Generate bindings
     let include_dir = IncludeDir::new(artifacts);
-    Bindgen::new(include_dir).generate();
+    let headers = Headers::from_env().unwrap_or_default();
+    Bindgen::new(include_dir, headers).generate();
 }

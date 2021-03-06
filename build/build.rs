@@ -18,13 +18,15 @@ impl BuildDir {
     /// Creates a new build directory
     fn new(path: PathBuf) -> Self {
         // Delete an existing directory
-        'delete_loop: while path.exists() {
-            match fs::remove_dir_all(&path) {
-                Ok(_) => break 'delete_loop,
-                Err(_) => thread::sleep(Duration::from_secs(1))
+        if env::var("MBEDCRYPTO_CLEAR_BUILD_DIR").is_ok() {
+            'delete_loop: while path.exists() {
+                match fs::remove_dir_all(&path) {
+                    Ok(_) => break 'delete_loop,
+                    Err(_) => thread::sleep(Duration::from_secs(1))
+                }
             }
         }
-
+        
         // Create the directory
         fs::create_dir_all(&path).expect("Failed to create build dir");
         Self { path }
@@ -37,10 +39,8 @@ impl BuildDir {
 }
 impl Default for BuildDir {
     fn default() -> Self {
-        let mut path = env::current_dir().expect("Failed to get working directory");
-        path.push("target");
-        path.push("mbedtls");
-
+        let path = env::current_dir().expect("Failed to get working directory")
+            .join("target").join("mbedtls");
         Self::new(path)
     }
 }
@@ -65,10 +65,8 @@ impl ConfigH {
 }
 impl Default for ConfigH {
     fn default() -> Self {
-        let mut path = PathBuf::from(".");
-        path.push("mbedtls");
-        path.push("config.h");
-
+        let path = env::current_dir().expect("Failed to get working directory")
+            .join("mbedtls").join("config.h");
         Self { path }
     }
 }
@@ -90,10 +88,7 @@ impl MbedTls {
     /// Builds `mbedTLS` and returns the path to the artifacts
     pub fn build(&self) -> PathBuf {
         // Copy config.h
-        let mut config_h_dest = self.build_dir.path().clone();
-        config_h_dest.push("include");
-        config_h_dest.push("mbedtls");
-        config_h_dest.push("config.h");
+        let config_h_dest = self.build_dir.path().join("include").join("mbedtls").join("config.h");
         self.config_h.copy(config_h_dest);
 
         // Build the library
