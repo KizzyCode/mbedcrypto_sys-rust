@@ -4,7 +4,8 @@ rust:
 
 arch:
   - amd64
-  - arm64
+# NOTE: clang_Cursor_isFunctionInlined is not supported by Travis-CI Arm64 VMs, but required
+#  - arm64
 
 matrix:
   include:
