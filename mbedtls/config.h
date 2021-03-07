@@ -244,7 +244,7 @@
  *
  * Uncomment to get warnings on using deprecated functions and features.
  */
-#define MBEDTLS_DEPRECATED_WARNING
+//#define MBEDTLS_DEPRECATED_WARNING
 
 /**
  * \def MBEDTLS_DEPRECATED_REMOVED
@@ -944,7 +944,8 @@
  *      MBEDTLS_TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA
  *      MBEDTLS_TLS_ECDHE_PSK_WITH_RC4_128_SHA
  */
-//#define MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
+// HACK: Needed because Windows fails if `mbedtls_ssl_premaster_secret` has no fields
+#define MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
 
 /**
  * \def MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
@@ -3850,7 +3851,7 @@
  * fields of a mbedtls_ecdh_context structure directly. See also
  * MBEDTLS_ECDH_LEGACY_CONTEXT in include/mbedtls/ecdh.h.
  */
-#define MBEDTLS_ECDH_VARIANT_EVEREST_ENABLED
+//#define MBEDTLS_ECDH_VARIANT_EVEREST_ENABLED
 
 /* \} name SECTION: Customisation configuration options */
 

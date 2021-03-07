@@ -97,7 +97,9 @@ impl Bindgen {
             .whitelist_function("mbedtls.*").whitelist_function("MBEDTLS.*")
             .whitelist_var("mbedtls.*").whitelist_var("MBEDTLS.*")
             // C-stdlib types
-            .whitelist_type("time_t").opaque_type("time_t");
+            .whitelist_type("time_t").opaque_type("time_t")
+            // Blacklist vararg fns generated for windows
+            .blacklist_item("mbedtls_vsnprintf").blacklist_function("mbedtls_platform_set_vsnprintf");
         
         // Register headers and generate and write the bindings
         for header in self.headers.files() {

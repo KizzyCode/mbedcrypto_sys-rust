@@ -1,5 +1,5 @@
 use std::{
-    env, iter::FromIterator, process::Command,
+    env, process::Command,
     path::{ Path, PathBuf }
 };
 
@@ -59,16 +59,16 @@ impl Default for Untar {
     fn default() -> Self {
         // Common tar locations
         let paths = vec![
-            vec!["/", "bin", "tar"],
-            vec!["/", "usr", "bin", "tar"],
-            vec!["/", "usr", "local", "bin", "tar"],
-            vec!["C:", "Windows", "System32", "tar.exe"]
+            "/bin/tar",
+            "/usr/bin/tar",
+            "/usr/local/bin/tar",
+            "C:/Windows/System32/tar.exe"
         ];
 
         // Find a tar instance
         for path in paths {
             // Test if the binary exists
-            let binary = PathBuf::from_iter(path);
+            let binary = PathBuf::from(path);
             if binary.exists() {
                 return Self { binary };
             }

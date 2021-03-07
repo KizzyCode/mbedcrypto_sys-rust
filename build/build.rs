@@ -1,3 +1,4 @@
+use cmake::Config;
 use std::{
     fs, env, thread, time::Duration,
     path::{ Path, PathBuf }
@@ -92,6 +93,6 @@ impl MbedTls {
         self.config_h.copy(config_h_dest);
 
         // Build the library
-        cmake::build(self.build_dir.path())
+        Config::new(self.build_dir.path()).build()
     }
 }
