@@ -24,7 +24,7 @@ impl MbedTlsTarball {
 impl Default for MbedTlsTarball {
     fn default() -> Self {
         let archive = env::current_dir().expect("Failed to get working directory")
-            .join("mbedtls").join("mbedtls-2.25.0.tar.gz");
+            .join("mbedtls").join("mbedtls-2.26.0.tar.gz");
         MbedTlsTarball { archive }
     }
 }
